@@ -10,6 +10,9 @@
 *.o
 *.obj
 
+Content/__ExternalActors__/
+Content/__ExternalObjects__/
+
 # Precompiled Headers
 *.gch
 *.pch
