@@ -13,11 +13,11 @@ class GROCERYFRENZY_API AHazardManager : public AActor
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float BaseDelayBetweenHazard = 5.0;
+	float BaseDelayBetweenHazard = 10.0;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float DelayDecrease = 2.0;
+	float DelayDecrease = 1.0;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float MinDelayBetweenHazard = 1.0;
+	float MinDelayBetweenHazard = 2.0;
 
 	// Sets default values for this actor's properties
 	AHazardManager();
