@@ -58,10 +58,12 @@ void AMultiplayerGameMode::SpawnCharactersToPlayerStarts()
     
     	if(auto Controller = UGameplayStatics::GetPlayerController(GetWorld(), i))
     	{
+    		Controller->bAutoManageActiveCameraTarget = false;
     		Controller->Possess(Character);
     	}else
     	{
     		APlayerController* PlayerController = UGameplayStatics::CreatePlayer(GetWorld(), i, true);
+    		PlayerController->bAutoManageActiveCameraTarget = false;
     		PlayerController->Possess(Character);
     	}
     
