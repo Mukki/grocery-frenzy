@@ -107,7 +107,7 @@ void AWaterLeak::Tick(float DeltaTime)
 		{
 			IsActive = false;
 			SpreadFactor = 0;
-			LeakRoot->SetRelativeScale3D(FVector(0, 0, 0));
+			LeakRoot->SetRelativeScale3D(FVector(0, 1, 1));
 			SetActorTickEnabled(false);
 		}
 	}
