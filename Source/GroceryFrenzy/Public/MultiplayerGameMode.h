@@ -14,27 +14,44 @@ UCLASS()
 class GROCERYFRENZY_API AMultiplayerGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
-	
-	public:
-    AMultiplayerGameMode();
-    
-    virtual void BeginPlay() override;
-    virtual void Tick(float DeltaTime) override;
+
+public:
+	AMultiplayerGameMode();
+
+	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaTime) override;
+
+	UFUNCTION(BlueprintCallable, Category = "MultiplayerGameMode")
+	void StartGame();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-    TArray<AActor*> Characters;
-	
-	private:
-    void CollectAllPlayerStarts();
-    void SpawnCharactersToPlayerStarts();
+	TArray<AActor*> Characters;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float GameDurationInSeconds = 180.0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int Score;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	float Timer;
+
+
+private:
+	void CollectAllPlayerStarts();
+	void SpawnCharactersToPlayerStarts();
 
 	UPROPERTY()
-    TArray<APlayerStart*> PlayerStarts;
-    
-    UPROPERTY()
-    TArray<FInputDeviceId> ConnectedControllers;
-    
-    //TODO: Edit to use our own character class
-    UPROPERTY(EditAnywhere, Category = "Bomberman settings")
-    TSubclassOf<APawn> CharacterClass;
+	TArray<APlayerStart*> PlayerStarts;
+
+	UPROPERTY()
+	TArray<FInputDeviceId> ConnectedControllers;
+
+	UPROPERTY()
+	bool GameStarted = false;	
+	UPROPERTY()
+	bool GameFinished = false;
+
+	//TODO: Edit to use our own character class
+	UPROPERTY(EditAnywhere, Category = "Bomberman settings")
+	TSubclassOf<APawn> CharacterClass;
 };
