@@ -47,7 +47,10 @@ void AWaterLeak::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
                               UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
                               const FHitResult& SweepResult)
 {
-	OverlappingActors.Add(OtherActor);
+	if (OtherActor && !OverlappingActors.Contains(OtherActor))
+	{
+		OverlappingActors.Add(OtherActor);
+	}
 }
 
 
@@ -80,9 +83,11 @@ void AWaterLeak::Tick(float DeltaTime)
 	if (IsActive && OverlappingActors.Num() > 0)
 	{
 		FVector const LocationIncrement = WaterCurrentForce * ForwardVector * DeltaTime;
+		int i = 0;
 		for (auto const Actor : OverlappingActors)
 		{
 			Actor->SetActorLocation(Actor->GetActorLocation() + LocationIncrement);
+			i++;
 		}
 	}
 
@@ -92,7 +97,9 @@ void AWaterLeak::Tick(float DeltaTime)
 		// Arrête l'expansion de la fuite si atteint le vide
 		if (CheckForVoidUnderneath(Raycaster->GetComponentLocation()))
 		{
-			SpreadFactor = 0;			
+			SpreadFactor = 0;
+			// garantit que la fuite dépasse bien dans le vide
+			LeakRoot->SetRelativeScale3D(LeakRoot->GetRelativeScale3D() + FVector(.4, 0, 0));
 
 			// Créé un timer pour dissiper la fuite
 			GetWorldTimerManager().ClearTimer(DissipationTimer);
@@ -107,7 +114,7 @@ void AWaterLeak::Tick(float DeltaTime)
 		{
 			IsActive = false;
 			SpreadFactor = 0;
-			LeakRoot->SetRelativeScale3D(FVector(0, 0, 0));
+			LeakRoot->SetRelativeScale3D(FVector(0, 1, 1));
 			SetActorTickEnabled(false);
 		}
 	}

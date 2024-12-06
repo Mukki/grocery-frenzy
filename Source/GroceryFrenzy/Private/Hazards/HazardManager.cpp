@@ -12,14 +12,14 @@ AHazardManager::AHazardManager()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
+	CurrentDelayBetweenHazard = BaseDelayBetweenHazard;
 }
 
 // Called when the game starts or when spawned
 void AHazardManager::BeginPlay()
 {
 	Super::BeginPlay();
-	CurrentDelayBetweenHazard = BaseDelayBetweenHazard;
-	// Starts a loop that will trigger hazards"
+	// Starts a loop that will trigger hazards
 	GetWorld()->GetTimerManager().SetTimer(
 		HazardTimerHandle,
 		this,
