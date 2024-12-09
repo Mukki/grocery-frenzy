@@ -21,6 +21,7 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
+
 	UFUNCTION(BlueprintCallable, Category = "MultiplayerGameMode")
 	void StartGame();
 
@@ -35,22 +36,27 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	float Timer;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool GameStarted = false;	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool GameFinished = false;
+
 
 private:
 	void CollectAllPlayerStarts();
+	void SetInputEnabled(const bool bEnableInput);
 	void SpawnCharactersToPlayerStarts();
-
+	void OnGameEnd();
+	
 	UPROPERTY()
 	TArray<APlayerStart*> PlayerStarts;
 
 	UPROPERTY()
 	TArray<FInputDeviceId> ConnectedControllers;
-
+	
 	UPROPERTY()
-	bool GameStarted = false;	
-	UPROPERTY()
-	bool GameFinished = false;
-
+	FTimerHandle InitTimer;
+	
 	//TODO: Edit to use our own character class
 	UPROPERTY(EditAnywhere, Category = "Bomberman settings")
 	TSubclassOf<APawn> CharacterClass;
