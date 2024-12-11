@@ -10,10 +10,11 @@ public:
 	// True when the hazard's effects are currently running
 	UPROPERTY()
 	bool IsActive = false;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hazard")
+	USoundBase* TriggerSound;
 
 	// Function to call to make the hazard active
 	UFUNCTION()
-	virtual void Trigger()
-	{
-	}
+	virtual void Trigger();
 };

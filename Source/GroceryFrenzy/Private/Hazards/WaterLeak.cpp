@@ -63,6 +63,7 @@ void AWaterLeak::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 
 void AWaterLeak::Trigger()
 {
+	Super::Trigger();
 	IsActive = true;
 	SpreadFactor = 1.0f;
 	SetActorTickEnabled(true);
@@ -75,11 +76,13 @@ void AWaterLeak::Dissipate()
 	SetActorTickEnabled(true);
 }
 
+
 // Called every frame
 void AWaterLeak::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	// Gère le déplacement des objets pris dans le courant
 	if (IsActive && OverlappingActors.Num() > 0)
 	{
 		FVector const LocationIncrement = WaterCurrentForce * ForwardVector * DeltaTime;
@@ -91,6 +94,7 @@ void AWaterLeak::Tick(float DeltaTime)
 		}
 	}
 
+	// Agrandit la fuite
 	if (SpreadFactor > 0)
 	{
 		LeakRoot->SetRelativeScale3D(LeakRoot->GetRelativeScale3D() + FVector(SpreadingSpeed * SpreadFactor, 0, 0));
@@ -106,16 +110,19 @@ void AWaterLeak::Tick(float DeltaTime)
 			GetWorldTimerManager().SetTimer(DissipationTimer, this, &AWaterLeak::Dissipate, LeakDuration);
 		}
 	}
+	// Rétrécit la fuite
 	else if (SpreadFactor < 0)
 	{
 		LeakRoot->SetRelativeScale3D(LeakRoot->GetRelativeScale3D() + FVector(SpreadingSpeed * SpreadFactor, 0, 0));
 
 		if (LeakRoot->GetRelativeScale3D().X < 0.01)
 		{
-			IsActive = false;
 			SpreadFactor = 0;
 			LeakRoot->SetRelativeScale3D(FVector(0, 1, 1));
 			SetActorTickEnabled(false);
+
+			// Rend la fuite à nouveau opérationelle après le cooldown
+			GetWorldTimerManager().SetTimer(CooldownTimer, [this]() { IsActive = false; }, CooldownDuration, false);
 		}
 	}
 }

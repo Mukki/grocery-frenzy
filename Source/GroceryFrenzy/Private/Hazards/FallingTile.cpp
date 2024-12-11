@@ -30,6 +30,7 @@ void AFallingTile::Tick(float DeltaTime)
 
 void AFallingTile::Trigger()
 {
+	Super::Trigger();
 	Collider->SetEnableGravity(true);
 	Collider->SetSimulatePhysics(true);
 	IsActive = true;

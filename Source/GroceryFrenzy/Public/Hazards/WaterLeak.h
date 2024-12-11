@@ -38,6 +38,8 @@ public:
 	float MaxLeakLength = 500.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WaterLeak")
 	float LeakDuration = 10.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WaterLeak")
+	float CooldownDuration = 5.0f;
 
 	UFUNCTION()
 	void BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
@@ -57,6 +59,8 @@ protected:
 	TArray<AActor*> OverlappingActors = {};
 	UPROPERTY()
 	FTimerHandle DissipationTimer;
+	UPROPERTY()
+	FTimerHandle CooldownTimer;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
