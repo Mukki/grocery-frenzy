@@ -10,11 +10,15 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Character.h"
 #include "Engine/World.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 AMultiplayerGameMode::AMultiplayerGameMode()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	PlayerStarts = TArray<APlayerStart*>();
+
+	Score = 0;
+	Timer = 0;
 }
 
 void AMultiplayerGameMode::BeginPlay()
@@ -32,27 +36,38 @@ void AMultiplayerGameMode::BeginPlay()
 	SpawnCharactersToPlayerStarts();
 	UE_LOG(LogTemp, Warning, TEXT("Spawned Characters: %d"), Characters.Num());
 
-	Score = 0;
-	Timer = 0;
+	// laisse le temps au niveau de s'initialiser avant de mettre en pause
+	GetWorldTimerManager().SetTimer(InitTimer, [this]()
+	{
+		UGameplayStatics::SetGamePaused(GetWorld(), true);
+	}, 0.05f, false);
 }
 
 void AMultiplayerGameMode::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (GameStarted)
+	if (GameStarted && !GameFinished)
 	{
 		Timer += DeltaTime;
 		if (Timer >= GameDurationInSeconds)
 		{
-			GameFinished = true;
+			OnGameEnd();
 		}
 	}
-	
 }
 
 void AMultiplayerGameMode::StartGame()
 {
 	GameStarted = true;
+	UGameplayStatics::SetGamePaused(this, false);
+
+}
+
+void AMultiplayerGameMode::OnGameEnd()
+{
+	GameFinished = true;
+	Timer = 0.0;
+	UGameplayStatics::SetGamePaused(this, true);
 }
 
 void AMultiplayerGameMode::SpawnCharactersToPlayerStarts()
@@ -107,6 +122,36 @@ void AMultiplayerGameMode::CollectAllPlayerStarts()
 		if (PlayerStart != nullptr)
 		{
 			PlayerStarts.Add(PlayerStart);
+		}
+	}
+}
+
+
+void AMultiplayerGameMode::SetInputEnabled(const bool bEnableInput)
+{
+	UWorld* World = GetWorld();
+	if (World == nullptr) return;
+
+	// Parcourir tous les Player Controllers
+	for (FConstPlayerControllerIterator Iterator = World->GetPlayerControllerIterator(); Iterator; ++Iterator)
+	{
+		APlayerController* PlayerController = Iterator->Get();
+		if (PlayerController != nullptr)
+		{
+			ACharacter* ControlledCharacter = Cast<ACharacter>(PlayerController->GetPawn());
+
+			if (bEnableInput)
+			{
+				EnableInput(PlayerController);
+				if (ControlledCharacter != nullptr)	ControlledCharacter->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+				UE_LOG(LogTemp, Warning, TEXT("INPUT ENABLED"));
+			}
+			else
+			{
+				DisableInput(PlayerController);
+				if (ControlledCharacter != nullptr)	ControlledCharacter->GetCharacterMovement()->DisableMovement();
+				UE_LOG(LogTemp, Warning, TEXT("INPUT DISABLED"));
+			}
 		}
 	}
 }
