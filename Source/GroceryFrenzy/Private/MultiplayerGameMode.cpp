@@ -78,7 +78,10 @@ void AMultiplayerGameMode::SpawnCharactersToPlayerStarts()
 		return;
 	}
 
-	for (int32 i = 0; i < ConnectedControllers.Num(); i++)
+	constexpr int32 MaxPlayers = 2;
+	const int32 NumPlayersToSpawn = FMath::Min(MaxPlayers, ConnectedControllers.Num());
+
+	for (int32 i = 0; i < NumPlayersToSpawn; i++)
 	{
 		if (i >= PlayerStarts.Num())
 		{
@@ -86,8 +89,11 @@ void AMultiplayerGameMode::SpawnCharactersToPlayerStarts()
 			return;
 		}
 
-		APawn* Character = GetWorld()->SpawnActor<APawn>(CharacterClass, PlayerStarts[i]->GetActorLocation(),
-		                                                 PlayerStarts[i]->GetActorRotation());
+		// Choose the character blueprint based on the player index
+		TSubclassOf<APawn> SelectedCharacterClass = (i == 0) ? CharacterClass1 : CharacterClass2;
+
+		APawn* Character = GetWorld()->SpawnActor<APawn>(SelectedCharacterClass, PlayerStarts[i]->GetActorLocation(),
+														 PlayerStarts[i]->GetActorRotation());
 
 		if (auto Controller = UGameplayStatics::GetPlayerController(GetWorld(), i))
 		{
