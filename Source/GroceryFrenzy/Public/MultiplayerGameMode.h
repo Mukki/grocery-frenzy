@@ -57,7 +57,8 @@ private:
 	UPROPERTY()
 	FTimerHandle InitTimer;
 	
-	//TODO: Edit to use our own character class
-	UPROPERTY(EditAnywhere, Category = "Bomberman settings")
-	TSubclassOf<APawn> CharacterClass;
+	UPROPERTY(EditAnywhere, Category = "MultiplayerGameMode")
+	TSubclassOf<APawn> CharacterClass1;
+	UPROPERTY(EditAnywhere, Category = "MultiplayerGameMode")
+	TSubclassOf<APawn> CharacterClass2;
 };
